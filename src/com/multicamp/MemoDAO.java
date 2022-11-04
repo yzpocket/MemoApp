@@ -1,6 +1,7 @@
 package com.multicamp;
 import java.sql.*;
 import java.util.*;
+import java.util.List;
 //Data Access Object : 모델에 속하며, Persistence 계층이라고 부른다.
 //DAO(Data Access Object, 실제적으로 DB에 접근하는 객체) 클래스   [Persistence Layer] 
 public class MemoDAO {
@@ -13,7 +14,22 @@ public class MemoDAO {
 		try {
 			con=DBUtil.getCon();
 			
-			return 0;
+			//이전에 쓰던방식 아래
+			//String : immutable (불변성)을 가져 원본은 변하지 않음.
+//			String sql="INSERT INTO MEMO(idx, name, msg, wdate)";
+//            sql+=" values(memo_seq.nextval,?,?,sysdate)";
+
+			//String 방식.
+			//StringBulder, StringBuffer : 문자열을 메모리 버퍼에 넣고 수정,삭제,삽입 등의 편집작업을 할 수 있음.
+			StringBuilder buf=new StringBuilder("INSERT INTO MEMO(idx, name, msg, wdate)")
+												.append(" values(memo_seq.nextval,?,?,sysdate)");
+			String sql=buf.toString();
+            
+            ps=con.prepareStatement(sql);
+            ps.setString(1, memo.getName());
+            ps.setString(2, memo.getMsg());
+            int n=ps.executeUpdate();           
+			return n;
 		}finally {
 			close();
 		}
@@ -27,5 +43,37 @@ public class MemoDAO {
 		}catch(SQLException e) {
 			
 		}
+	}
+	
+	public List<MemoVO> selectMemoAll() throws SQLException{
+		try {
+			con=DBUtil.getCon();
+			StringBuilder buf=new StringBuilder("select idx, rpad(name,12,' ') name, rpad(msg,100,' ') msg,")
+									.append(" wdate from memo order by idx desc");
+			String sql=buf.toString();
+			ps=con.prepareStatement(sql);
+			rs=ps.executeQuery();
+			List<MemoVO> arr=makeList(rs);
+			return arr;
+		}finally {
+			close();
+		}
+	}
+
+	private List<MemoVO> makeList(ResultSet rs) throws SQLException {
+		List<MemoVO> arr=new ArrayList<>();
+		while(rs.next()) {
+			int idx=rs.getInt("idx");
+			String name=rs.getString("name");
+			String msg=rs.getString("msg");
+			java.sql.Date wdate=rs.getDate("wdate"); //컬럼데이터들 다꺼내와서
+			//vo에 담아준다
+			MemoVO vo=new MemoVO(idx,name,msg,wdate);
+			arr.add(vo); //ArrayList에 vo를 담는다
+		}
+		return arr;//담긴 ArrayList를 반환
+	}
+	public int deleteMemo(int idx) throws SQLException{
+		
 	}
 }
