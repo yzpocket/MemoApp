@@ -6,6 +6,11 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/inyongkim/Documents/myjava/devtools[oracle sql]/ojdbc6.jar"/>
+	<classpathentry kind="lib" path="/JDBC/library/ojdbc6.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/inyongkim/Documents/myjava/devtools[oracle sql tomcat db]/ojdbc6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

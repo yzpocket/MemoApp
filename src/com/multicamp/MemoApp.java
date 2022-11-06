@@ -3,6 +3,7 @@ package com.multicamp;
 import java.awt.*;
 import java.util.Date;
 import javax.swing.*;
+import java.util.List;
 import java.text.SimpleDateFormat;
 /* MVC패턴 독립적인 앱들을 개발하던 디자인 패턴인데 웹에도 도입하고 있다.
  * 모델1방식 : mvc패턴을 적용하지 않을 때
@@ -39,16 +40,11 @@ public class MemoApp extends JFrame {
 	
 	JTextArea ta;
 	JTextField tfName, tfDate, tfMsg, tfIdx;
-	JButton btAdd, btList, btDel, btEdit, btEditEnd, btFind;
+	JButton btAdd, btList, btDel, btEdit,btEditEnd,btFind;
 	MemoHandler handler;
-//	MemoDAO dao;
-	
-//	MemoFindGui subFrame=new MemoFindGui(this);
-	
+	MemoFindGui subFrame;
 	public MemoApp() {
 		super("::MemoApp::");
-//		dao=new MemoDAO();
-		
 		Container cp=this.getContentPane();
 		cp.add(p,"North");
 		
@@ -112,76 +108,72 @@ public class MemoApp extends JFrame {
 		p4.add(btEditEnd);
 		p4.add(btFind);
 		
-		String today=getDate(); //화면에 날짜 넣기.
+		String today=getDate();
 		tfDate.setText(today);
-		
-		//리스너 부착----
+		//리스너 부착--------
 		handler=new MemoHandler(this);
+		subFrame=new MemoFindGui(this); 
+		
 		btAdd.addActionListener(handler);
-		btList.addActionListener(handler);
 		btDel.addActionListener(handler);
 		btEdit.addActionListener(handler);
 		btEditEnd.addActionListener(handler);
 		btFind.addActionListener(handler);
-		
-		
-		
+		btList.addActionListener(handler);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(750,500);
+		setSize(700,500);
 		setVisible(true);
 	}//생성자-----------
 	
-	//현재날짜를 YY/MM/DD 포맷의 문자열로 반환하는 메서드 //화면에 날짜 넣기.
+	/**현재 날짜를 YY/MM/DD 포맷의 문자열로 반환하는 메서드*/
 	public String getDate() {
 		Date today=new Date();
-//		System.out.println(today.toString());
+//		SimpleDateFormat sdf=new SimpleDateFormat("yy-MM-dd hh:mm:ss");
 		SimpleDateFormat sdf=new SimpleDateFormat("yy-MM-dd");
-//		SimpleDateFormat sdf=new SimpleDateFormat("yy-MM-dd hh:mm:ss"); 
-											//java 		yy연-MM월-dd일 hh시간:mm분:ss초
-											//oracle	yy연-mm월-dd일 hh시간:mi분:ss초 양식이 좀 다르다.
+								//Java:    yy:년도, MM:월, dd:일, hh:시간, mm:분, ss:초
+								//Oracle:  yy:년도, mm:월, dd:일, hh:시간, mi:분, ss:초
 		String str=sdf.format(today);
-//		System.out.println(str); //확인용.
 		return str;
 	}
 	
 	public void showMessage(String str) {
 		JOptionPane.showMessageDialog(this, str);
 	}//----------------------------
-	
-	
 	public static void main(String[] args) {
 		new MemoApp();
-	}
+	}//-------------------------------
 	public void clearTf() {
 		tfIdx.setText("");
 		tfName.setText("");
 		tfMsg.setText("");
-		tfName.requestFocus();
-	}
+		tfName.requestFocus();		
+	}//--------------------------------
 	public void showTextArea(List<MemoVO> arr) {
 		if(arr==null||arr.size()==0) {
 			ta.setText("데이터가 없습니다.");
 		}else {
 			ta.setText("");
-			ta.append("===============================\n");
-			ta.append("글번호\t작성자\t메모내용\t\t\t작성일\n");
-			ta.append("===============================\n");
+			ta.append("===============================================================================\n");
+			ta.append("글번호\t작성자\t메모내용\t\t\t\t작성일\n");
+			ta.append("===============================================================================\n");
 			for(MemoVO vo:arr) {
 				ta.append(vo.getIdx()+"\t"+vo.getName()+vo.getMsg()+vo.getWdate()+"\n");
-
 			}
-			ta.append("========================\n");
+			ta.append("===============================================================================\n");
 		}
-		ta.setCaretPosition(0); //커서위치 앞으로
-	}
+		ta.setCaretPosition(0);//커서 위치 앞으로
+	}//--------------------------------------
 
-	public String showInput(String str) {
+	public String showInput(String msg) {
 		String str=JOptionPane.showInputDialog(msg);
 		return str;
-	}
-}
+	}//--------------------------------------
 
-
-
-
-
+	public void setText(MemoVO vo) {
+		if(vo==null) return;
+		tfIdx.setText(vo.getIdx()+"");
+		tfName.setText(vo.getName());
+		tfMsg.setText(vo.getMsg());
+		tfDate.setText(vo.getWdate().toString());
+	}//------------------------------
+}//////////////////////////////////////////

@@ -6,7 +6,9 @@
 package com.multicamp;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -16,10 +18,43 @@ import javax.swing.table.DefaultTableModel;
  */
 public class MemoFindGui extends javax.swing.JFrame {
 
-	public MemoFindGui() {
-        initComponents();
-    }
-
+	MemoApp mainFrame;
+	DefaultTableModel model;
+	String[] colHeader= {"글번호","글내용","작성자","작성일"};
+	
+	public MemoFindGui(MemoApp sub) {
+        initComponents();//gui 구성
+        this.mainFrame=sub;
+        //리스너 부착-----------------
+        btFindEnd.addActionListener(mainFrame.handler);
+        tfKeyword.addActionListener(mainFrame.handler);
+    }//---------------------------------
+	//JTable컴포넌트
+	/*swing-JFC
+	 * MVC패턴
+	 * Model - VO/DAO, XXXModel ==> 데이터를 가지고 있는 계층
+	 * View - JTextArea, JButton, JTable, JList....
+	 * Controller - XXXRender, XXXEditor....
+	 * 
+	 * JTable : 행과 열로 구성된 컴포넌트 ==>View
+	 * DefaultTableModel : => Model => db에서 가져온 데이터를 모델에 넘겨준다
+	 * View와 Model을 연결하는 작업을 해야 서로 연결된다.
+	 * */
+	public void showTable(List<MemoVO> arr) {
+		Object[][] data=new Object[arr.size()][this.colHeader.length];
+		//반복문 돌면서 arr에 담긴 MemoVO를 꺼내서 data로 옮긴다
+		for(int i=0;i<data.length;i++) {
+			MemoVO vo=arr.get(i);
+			data[i][0]=vo.getIdx();
+			data[i][1]=vo.getMsg();
+			data[i][2]=vo.getName();
+			data[i][3]=vo.getWdate();
+		}//for---------------
+		//data==> 데이터 ==> 모델이 갖는다
+		model=new DefaultTableModel(data, colHeader);
+		//View와 Model을 연결해야 데이터가 화면계층에 표현된다.
+		table.setModel(model);
+	}//----------------------------------------
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -38,14 +73,14 @@ public class MemoFindGui extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        
+        //setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);//프로세스 종료
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);//팝업창만 닫기
 
         jLabel1.setFont(new java.awt.Font("휴먼편지체", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 153, 153));
         jLabel1.setText("한줄 메모장 글 검색");
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/multicamp/memo.jpg"))); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/multicamp/memo2.jpg"))); // NOI18N
         jLabel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         comboType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "작성자", "글내용", " " }));
@@ -140,6 +175,7 @@ public class MemoFindGui extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
+    /*
     public static void main(String args[]) {
          //Set the Nimbus look and feel 
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -171,6 +207,7 @@ public class MemoFindGui extends javax.swing.JFrame {
             }
         });
     }
+    */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     javax.swing.JButton btFindEnd;
@@ -179,7 +216,13 @@ public class MemoFindGui extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    javax.swing.JTable table;
+    javax.swing.JTable table;//View
     javax.swing.JTextField tfKeyword;
-    // End of variables declaration//GEN-END:variables
+
+	
 }
+
+
+
+
+
